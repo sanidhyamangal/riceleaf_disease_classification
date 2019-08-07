@@ -22,6 +22,19 @@ image_labels = [
     labels_index[pathlib.Path(image).parent.name] for image in all_image_data
 ]
 
-image_raw = tf.io.read_file(all_image_data[0])
-image_decoded = tf.image.decode_image(image_raw)
-image_final = tf.image.resize(image_decoded, [192, 192]) / 255.0
+
+def load_preprocess_image(image_name):
+    image_raw = tf.io.read_file(image_name)
+    image_decoded = tf.image.decode_image(image_raw)
+    image_final = tf.image.resize(image_decoded, [192, 192]) / 255.0
+
+    return image_final
+
+
+# make a image ds
+image_ds = tf.data.Dataset.from_tensor_slices(
+    (image_labels, [load_preprocess_image(image) for image in all_image_data])
+)
+
+# shuffle the data set
+final_data = image_ds.shuffle(100).batch(64, drop_remainder=False)
