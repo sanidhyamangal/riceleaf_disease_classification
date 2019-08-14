@@ -48,7 +48,7 @@ class LoadImages:
             ([self.__process_image(image) for image in self.__all_image_data])
         )
         # zip both the dataset together
-        image_ds = tf.data.Dataset.zip((labelds, imageds))
+        image_ds = tf.data.Dataset.zip((imageds, labelds))
 
         # return a batchec and shuffled images
         return image_ds.shuffle(100).batch(64, drop_remainder=True)
